@@ -1,6 +1,6 @@
 package com.sys.service;
 
-import com.sys.model.User;
+import com.sys.beans.User;
 
 import java.util.List;
 import java.util.Map;

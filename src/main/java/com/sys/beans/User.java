@@ -1,4 +1,4 @@
-package com.sys.model;
+package com.sys.beans;
 
 /**
  * 用户类
