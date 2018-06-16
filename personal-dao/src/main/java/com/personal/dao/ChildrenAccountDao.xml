@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.personal.mapper.ChildrenAccountDao">
+    <resultMap id="BaseResultMap" type="com.personal.model.SysUser">
+        <id column="uid" property="uid" jdbcType="BIGINT"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    uid,nickname,username
+    </sql>
+
+    <!--获取子账户信息-->
+    <select id="findChildAccountList" resultType="java.util.Map">
+        select uid,nickname,username
+        ,sd.depart_name
+        ,telephone,email,status
+        from sys_user su
+        left join sys_department sd on su.depart_id = sd.depart_id
+        where sd.depart_type = '1'
+    </select>
+    <!--查询部门信息-->
+    <select id="findDepartList" resultType="java.util.Map" parameterType="java.util.Map">
+        select
+        depart_id as id
+        ,depart_name as department
+        from sys_department where 1=1
+        <if test="depart_type != null and depart_type!='' ">
+            and depart_type = #{depart_type,jdbcType=CHAR}
+        </if>
+        <if test="list != null and list.size()>0">
+            and depart_id in
+            <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+                #{item,jdbcType=BIGINT}
+            </foreach>
+        </if>
+    </select>
+
+    <!--添加-->
+    <insert id="addChildAccount" parameterType="java.util.Map">
+      insert into sys_user
+      (nickname,username,depart_id,telephone,email,password,status,create_user,create_time)
+      VALUES
+      (#{nickname,jdbcType=VARCHAR},#{username,jdbcType=VARCHAR},#{depart_id
+      ,jdbcType=BIGINT},#{telephone,jdbcType=VARCHAR},#{email,jdbcType=VARCHAR}
+      ,#{password,jdbcType=VARCHAR},#{status,jdbcType=CHAR},#{create_user,jdbcType=BIGINT},now())
+    </insert>
+
+    <!--编辑-->
+    <update id="updateChildAccount" parameterType="java.util.Map">
+        update sys_user
+        <set>
+            <if test="nickname != null and nickname != ''">
+                nickname = #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="username != null and username != ''">
+                username = #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="depart_id != null and depart_id != ''">
+                depart_id = #{depart_id,jdbcType=BIGINT},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="telephone != null and telephone != ''">
+                telephone = #{telephone,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status,jdbcType=CHAR},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            update_user = #{update_user,jdbcType=BIGINT},update_time = now()
+        </set>
+        where uid = #{uid,jdbcType=BIGINT}
+    </update>
+
+    <!--删除-->
+    <delete id="deleteChildAccount" parameterType="java.util.Map">
+        delete from sys_user where uid = #{uid,jdbcType=BIGINT}
+    </delete>
+
+    <!--查询用户已分配的角色信息-->
+    <select id="findRolesList" resultType="java.util.Map" parameterType="java.util.Map">
+        select * from sys_user_role
+        where uid = #{uid,jdbcType=BIGINT} and rid = #{rid,jdbcType=BIGINT}
+    </select>
+    <!--查询当前用户拥有的角色信息-->
+    <select id="findAllRoleList" resultType="java.util.Map" parameterType="java.util.Map">
+        select distinct(sr.rid)rid,name from sys_role sr
+        left join sys_user_role sur on sur.rid = sr.rid
+        where 1 = 1
+        <if test="userId != null and userId != ''">
+            and sur.uid = #{userId,jdbcType=BIGINT}
+        </if>
+        order by sr.rid ASC
+    </select>
+    <!--查询当前用户创建的角色信息-->
+    <select id="findCreateRoleList" resultType="java.util.Map" parameterType="java.util.Map">
+        select distinct(sr.rid)rid,name from sys_role sr where create_user =#{userId,jdbcType=BIGINT}
+    </select>
+
+    <!--删除用户角色-->
+    <delete id="deleteUserRoles" parameterType="java.util.Map">
+        delete from sys_user_role where uid = #{uid,jdbcType=BIGINT}
+    </delete>
+    <!--批量添加-->
+    <insert id="batchAddSysUserRole" parameterType="Object" >
+        insert into sys_user_role (uid,rid)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.uid,jdbcType=BIGINT},#{item.rid,jdbcType=BIGINT})
+        </foreach>
+    </insert>
+    <!--查询用户信息-->
+    <select id="findUsernameExist" resultType="com.personal.model.SysUser" parameterType="java.util.Map">
+        select * from sys_user where username = #{username,jdbcType=VARCHAR}
+    </select>
+    <!--根据id查询username-->
+    <select id="findUsernameById" resultType="com.personal.model.SysUser" parameterType="java.lang.String">
+        select * from sys_user where uid = #{uid,jdbcType=BIGINT}
+    </select>
+    <!--查询用户角色-->
+    <select id="findRolesByUid" resultType="java.lang.Long" parameterType="java.util.Map">
+        select rid from sys_user_role where uid = #{uid,jdbcType=BIGINT}
+    </select>
+    <!--获取账户信息-->
+    <select id="findChildListInfoList" resultType="java.util.Map" parameterType="java.util.Map">
+        select uid,nickname,username,IFNULL(sd.depart_name,'未分配') as depart_name,telephone,email,status
+        from sys_user su
+        left join sys_department sd on su.depart_id = sd.depart_id
+        where 1=1
+        <if test="depart_type != null and depart_type != ''">
+            and ((sd.depart_type is not null and sd.depart_type = #{depart_type,jdbcType=CHAR}) or (sd.depart_type is
+            null))
+        </if>
+        <if test="create_user != null and create_user != ''">
+            and su.create_user = #{create_user,jdbcType=BIGINT}
+        </if>
+        <if test="list != null and list.size()>0">
+            and su.depart_id in
+            <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+                #{item,jdbcType=BIGINT}
+            </foreach>
+        </if>
+    </select>
+    <!--获取部门父级-->
+    <select id="findParentIdById" resultType="com.personal.model.Tree" parameterType="java.lang.String">
+        select depart_id id,parent_id pid,depart_type name from sys_department where depart_id = #{depart_id,jdbcType=BIGINT}
+    </select>
+
+    <!--根据用户获取符合条件的部门信息-->
+    <select id="findDepartMenuList" resultType="com.personal.model.Tree" parameterType="java.util.Map">
+        select depart_id id,parent_id pid,depart_name name from sys_department where depart_type = #{depart_type,jdbcType=BIGINT}
+    </select>
+
+    <!--获取所有部门 公司+银行-->
+    <select id="findAllDepartMenuList" resultType="com.personal.model.Tree" parameterType="java.util.Map">
+        select depart_id id,parent_id pid,depart_name name from sys_department where depart_type in(1,2) and parent_id is NOT NULL
+    </select>
+</mapper>

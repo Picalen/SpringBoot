@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.personal.mapper.DepartmentManagementDao">
+    <resultMap id="BaseResultMap" type="com.personal.model.SysDepartment">
+        <id column="depart_id" property="depart_id" jdbcType="BIGINT"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    depart_id, depart_name
+  </sql>
+    <!--添加-->
+    <insert id="addDepartment" parameterType="java.util.Map">
+        insert into sys_department
+        (depart_name,parent_id,depart_type,create_user,create_time)
+        VALUES (#{depart_name},#{parent_id},#{depart_type},#{create_user},now())
+    </insert>
+    <!--编辑-->
+    <update id="updateDepartment" parameterType="java.util.Map">
+        update sys_department
+        set depart_name = #{depart_name},update_user = #{update_user},update_time = now()
+        where depart_id = #{depart_id,jdbcType=BIGINT}
+    </update>
+    <!--删除-->
+    <delete id="deleteDepartment" parameterType="java.util.Map">
+        delete from sys_department where depart_id = #{depart_id,jdbcType=BIGINT}
+    </delete>
+    <!--根据部门id,查询父级部门类型-->
+    <select id="findDepartTypeById" resultType="java.util.Map" parameterType="java.util.Map">
+      select depart_id,depart_type
+        from sys_department
+        where depart_id =
+        (select parent_id from sys_department where depart_id = #{depart_id,jdbcType=BIGINT})
+    </select>
+
+    <!--获取部门信息-->
+    <select id="findCompanyDepartList" resultType="com.personal.model.Tree">
+        select depart_id id,depart_name name,parent_id pid from sys_department
+        where depart_type = #{depart_type,jdbcType=CHAR}
+    </select>
+
+    <!--获取部门信息-->
+    <select id="findAllCompanyDepartList" resultType="com.personal.model.Tree">
+        select depart_id id,depart_name name,parent_id pid from sys_department
+        where depart_type = #{depart_type,jdbcType=CHAR} AND parent_id IS NOT  NULL
+    </select>
+
+    <!--根据id查询部门名称-->
+    <select id="findNameById" resultType="java.lang.String" parameterType="java.lang.String">
+        select depart_name from sys_department where depart_id = #{departId,jdbcType=BIGINT}
+    </select>
+
+    <!--根据id查询部门名称-->
+    <select id="findChildrenDepartment" resultType="java.util.Map" parameterType="java.util.Map">
+        SELECT depart_id,depart_name from sys_department where parent_id=#{depart_id,jdbcType=BIGINT}
+    </select>
+    <select id="findRelationUser" resultType="java.util.Map" parameterType="java.util.Map">
+        SELECT depart_id,username from sys_user where depart_id = #{depart_id,jdbcType=BIGINT}
+    </select>
+</mapper>
