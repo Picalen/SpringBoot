@@ -1,0 +1,26 @@
+.ellipsis {
+  display: inline-block;
+  word-break: break-all;
+}
+
+.lines {
+  position: relative;
+  .shadow {
+    color: transparent;
+    opacity: 0;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 9999px;
+    z-index: -999;
+  }
+}
+
+.lineClamp {
+  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
