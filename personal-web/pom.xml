@@ -21,8 +21,8 @@
 			<version>${personal-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.fintech</groupId>
-			<artifactId>fintech-common</artifactId>
+			<groupId>com.eleven</groupId>
+			<artifactId>personal-common</artifactId>
 			<version>${personal-version}</version>
 		</dependency>
 		<dependency>
