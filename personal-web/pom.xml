@@ -41,19 +41,6 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>3.0.1</version>
-				<configuration>
-					<!-- <configLocation>springside-findbugs.xml</configLocation> -->
-					<!-- <threshold>High</threshold>  -->
-					<!-- <effort>Default</effort>   -->
-					<findbugsXmlOutput>true</findbugsXmlOutput>
-					<!-- findbugs xml输出路径-->
-					<findbugsXmlOutputDirectory>target/site</findbugsXmlOutputDirectory>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 </project>
