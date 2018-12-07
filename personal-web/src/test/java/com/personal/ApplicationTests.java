@@ -1,7 +1,7 @@
 package com.personal;
 
 import com.personal.model.User;
-import com.personal.redis.RedisService;
+import com.personal.redis.UserRedis;
 import com.personal.service.inter.OperationService;
 import net.sf.json.JSONObject;
 import org.apache.shiro.util.Assert;
@@ -22,7 +22,7 @@ public class ApplicationTests {
     private OperationService operationService;
 
     @Autowired
-    private RedisService redisService;
+    private UserRedis userRedis;
 
     @Test
     public void contextLoads() {
@@ -45,14 +45,14 @@ public class ApplicationTests {
         User user = new User();
         user.setName("wangjianfeng");
         user.setAge(22);
-        redisService.add("userByName:" + user.getName(), user, 10L);
+        userRedis.add("userByName:" + user.getName(), user, 10L);
         List<User> list = new ArrayList<>();
         list.add(user);
-        redisService.add("list", list, 10L);
-        User user1 = redisService.get("userByName:wangjianfeng");
+        userRedis.add("list", list, 10L);
+        User user1 = userRedis.get("userByName:wangjianfeng");
         Assert.notNull(user1, "user is null");
         System.out.println("user1: "+user1.toString());
-        List<User> list2 = redisService.getUserList("list");
+        List<User> list2 = userRedis.getUserList("list");
         Assert.notNull(list2, "list is null");
         System.out.println();
         if(list2.size()>0){
