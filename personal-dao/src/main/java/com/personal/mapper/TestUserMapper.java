@@ -16,26 +16,12 @@ import java.util.List;
 @Mapper
 public interface TestUserMapper {
 
-    @Insert("insert test_user(id,name,age,detail) values(#{id},#{userName})")
-    void insert(User u);
+    int insertUser(User u);
 
-    @Update("update test_user set name = #{name},age = #{age},detail = #{detail} where id=#{id} ")
-    void update(User u);
+    int updateUser(User u);
 
-    @Delete("delete from test_user where id=#{id} ")
-    void delete(@Param("id")String id);
+    int deleteUserById(User u);
 
-    @Select("select id,name,age,detail from test_user where id=#{id} ")
-    User find(@Param("id")String id);
-
-    /**
-     * 注：方法名和要UserMapper.xml中的id一致
-     *
-     */
-    @Select("select id,name,age,detail from test_user  where name like '%name%' ")
-    List<User> query(@Param("name") String userName);
-
-    @Delete("delete from test_user")
-    void deleteAll();
+    User findById(User u);
 
 }

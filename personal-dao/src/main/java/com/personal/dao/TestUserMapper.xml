@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.personal.mapper.TestUserMapper">
+    <resultMap id="BaseResultMap" type="com.personal.model.User">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="age" property="age" jdbcType="INTEGER"/>
+        <result column="detail" property="detail" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <insert id="insertUser"  parameterType="com.personal.model.User">
+        insert test_user(id,name,age,detail) values(#{id},#{name},#{age},#{detail})
+    </insert>
+
+    <update id="updateUser"  parameterType="com.personal.model.User">
+        update test_user set name = #{name},age = #{age},detail = #{detail} where id=#{id}
+    </update>
+
+    <delete id="deleteUserById"  parameterType="com.personal.model.User">
+        delete from test_user where id = #{id}
+    </delete>
+
+    <select id="findById" resultMap="BaseResultMap" parameterType="com.personal.model.User">
+        select id,name,age,detail from test_user where id= #{id}
+    </select>
+
+</mapper>

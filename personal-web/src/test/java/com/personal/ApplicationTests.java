@@ -3,6 +3,7 @@ package com.personal;
 import com.personal.model.User;
 import com.personal.redis.UserRedis;
 import com.personal.service.inter.OperationService;
+import com.personal.service.inter.UserRedisService;
 import net.sf.json.JSONObject;
 import org.apache.shiro.util.Assert;
 import org.junit.Test;
@@ -23,6 +24,9 @@ public class ApplicationTests {
 
     @Autowired
     private UserRedis userRedis;
+
+    @Autowired
+    UserRedisService userRedisService;
 
     @Test
     public void contextLoads() {
@@ -61,6 +65,28 @@ public class ApplicationTests {
             }
         }
 
+    }
+
+    @Test
+    public void testRedis() {
+        int id1 = 1;
+        int id2 = 4;
+
+        User testUser = new User();
+        testUser.setId(id1);
+        User user1 = userRedisService.findById(testUser);
+        if(user1!=null){
+            System.out.println(user1.toString());
+        }else {
+            System.out.println("user1為空");
+        }
+        testUser.setId(id2);
+        User user2 = userRedisService.findById(testUser);
+        if(user2!=null){
+            System.out.println(user2.toString());
+        }else {
+            System.out.println("user2為空");
+        }
     }
 
 
