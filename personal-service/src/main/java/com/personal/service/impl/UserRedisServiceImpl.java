@@ -4,14 +4,11 @@ import com.personal.mapper.TestUserMapper;
 import com.personal.model.User;
 import com.personal.service.inter.UserRedisService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -40,14 +37,14 @@ public class UserRedisServiceImpl implements UserRedisService {
     @Resource
     private RedisTemplate<String,String> redisTemplate;
 
-    @Cacheable(value = "user", key = "#user.getId()", unless = "#result eq null")
+    @Cacheable(value = "user", key = "'userId_'+#user.getId()", unless = "#result eq null")
     @Override
     public User findById(User user) {
         System.out.println("=====================缓存中查找失败，从数据库中获取，id="+user.getId());
         return userMapper.findById(user);
     }
 
-    @CacheEvict(value="user1",key = "user.getId()")
+    @CacheEvict(value="user1",key = "'userId_'+#user.getId()")
     @Override
     public User updateUser(User user) {
         System.out.println("===================从数据库中更新，从缓存中删除,id="+user.getId());
@@ -57,19 +54,21 @@ public class UserRedisServiceImpl implements UserRedisService {
         return null;
     }
 
-    @CachePut(value="user1",key = "user.getId()")
+    @CachePut(value="user1",key = "'userId_'+#user.getId()")
     @Override
     public User addUser(User user) {
         System.out.println("===================新增用户到数据库,id="+user.getId());
         User oldUser = userMapper.findById(user);
-        if(null != oldUser) return null;
+        if(null != oldUser){
+            return null;
+        }
         if(userMapper.insertUser(user) > 0){
             return user;
         }
         return null;
     }
 
-    @CacheEvict(value="user1",key = "user.getId()")
+    @CacheEvict(value="user1",key = "'userId_'+#user.getId()")
     @Override
     public boolean deleteFromCache(User user) {
         System.out.println("===================从数据库中删除，从缓存中删除,id="+user.getId());
